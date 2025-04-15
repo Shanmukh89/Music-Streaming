@@ -1,6 +1,6 @@
 # Streaming-Database
-CS 5200 Databases Project
-Group: RiouxSGhumatkarP
+CS 2008 Databases Project
+Group: Team S
 
 ### Prerequisites:
 1. Python version 3.x (Link to download python--> https://www.python.org/downloads/)
