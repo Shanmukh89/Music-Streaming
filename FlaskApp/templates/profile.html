@@ -1,0 +1,469 @@
+{% extends 'layout.html' %}
+{% block title %}Profile{% endblock %}
+{% block pagetitle %}<i class="fas fa-user fa-1x"></i> <span class="highlight-text">My Profile</span>{% endblock %}
+{% block content %}
+<div class="spotify-profile-container">
+    <div class="profile-content">
+        <div class="profile-header">
+            <div class="profile-title">
+                <i class="fas fa-id-card"></i> <span class="highlight-text">User</span> Profile
+            </div>
+        </div>
+
+        <div class="profile-card">
+            <div class="card-section personal-info">
+                <h3 class="section-title">
+                    <i class="fas fa-user-circle"></i>
+                    Personal Information
+                </h3>
+
+                <div class="info-grid">
+                    <div class="info-item">
+                        <div class="info-icon">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div class="info-content">
+                            <div class="info-label">Name</div>
+                            <div class="info-value">{{userinfo['firstName']}} {{userinfo['lastName']}}</div>
+                        </div>
+                    </div>
+
+                    <div class="info-item">
+                        <div class="info-icon">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <div class="info-content">
+                            <div class="info-label">Email</div>
+                            <div class="info-value">{{userinfo['email']}}</div>
+                        </div>
+                    </div>
+
+                    <div class="info-item">
+                        <div class="info-icon">
+                            <i class="fas fa-phone"></i>
+                        </div>
+                        <div class="info-content">
+                            <div class="info-label">Phone</div>
+                            <div class="info-value">{{userinfo['phone']}}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section-divider">
+                <div class="divider-line"></div>
+                <div class="divider-icon">
+                    <i class="fas fa-credit-card"></i>
+                </div>
+                <div class="divider-line"></div>
+            </div>
+
+            <div class="card-section subscription-info">
+                <h3 class="section-title">
+                    <i class="fas fa-money-check"></i>
+                    Subscription Details
+                </h3>
+
+                <div class="info-grid">
+                    <div class="info-item">
+                        <div class="info-icon premium">
+                            <i class="fas fa-tag"></i>
+                        </div>
+                        <div class="info-content">
+                            <div class="info-label">Plan</div>
+                            <div class="info-value highlight-text">{{paymentinfo['type']}}</div>
+                        </div>
+                    </div>
+
+                    <div class="info-item">
+                        <div class="info-icon">
+                            <i class="fas fa-dollar-sign"></i>
+                        </div>
+                        <div class="info-content">
+                            <div class="info-label">Price</div>
+                            <div class="info-value">{{paymentinfo['amount']}}</div>
+                        </div>
+                    </div>
+
+                    <div class="info-item">
+                        <div class="info-icon">
+                            <i class="fas fa-calendar-alt"></i>
+                        </div>
+                        <div class="info-content">
+                            <div class="info-label">Renewal Date</div>
+                            <div class="info-value">{{datestr}}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="action-buttons">
+                <form action="" method="post">
+                    <button class="action-button edit-button" name="edit">
+                        <span>Edit Payment Plan</span>
+                        <i class="fas fa-edit"></i>
+                    </button>
+
+                    <button class="action-button delete-button" name="delete">
+                        <span>Delete Account</span>
+                        <i class="fas fa-trash-alt"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Base Styles */
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: 'Circular Std', 'Segoe UI', sans-serif;
+        background: #121212;
+        color: #ffffff;
+        overflow-x: hidden;
+        min-height: 100vh;
+    }
+
+    /* Full-page Layout */
+    .spotify-profile-container {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(135deg, #121212 0%, #1e1e1e 100%);
+        overflow: auto;
+        padding: 2rem;
+        animation: fadeIn 0.5s ease-out;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .profile-content {
+        max-width: 800px;
+        margin: 0 auto;
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+    }
+
+    /* Profile Header */
+    .profile-header {
+        text-align: center;
+        margin-bottom: 1rem;
+    }
+
+    .profile-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.75rem;
+    }
+
+    .profile-title i {
+        color: #1DB954;
+        animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+        0% {
+            transform: scale(1);
+        }
+
+        50% {
+            transform: scale(1.1);
+        }
+
+        100% {
+            transform: scale(1);
+        }
+    }
+
+    .highlight-text {
+        color: #1DB954;
+        text-shadow: 0 0 15px rgba(29, 185, 84, 0.5);
+        animation: glow 1.5s infinite alternate;
+    }
+
+    @keyframes glow {
+        from {
+            text-shadow: 0 0 5px rgba(29, 185, 84, 0.3);
+        }
+
+        to {
+            text-shadow: 0 0 15px rgba(29, 185, 84, 0.7);
+        }
+    }
+
+    /* Profile Card */
+    .profile-card {
+        background: rgba(30, 30, 30, 0.7);
+        backdrop-filter: blur(10px);
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        padding: 2rem;
+        position: relative;
+    }
+
+    .profile-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 42px rgba(0, 0, 0, 0.4);
+    }
+
+    .profile-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 100px;
+        background: linear-gradient(90deg, #1DB954, #1ed760);
+        opacity: 0.1;
+        z-index: 0;
+    }
+
+    /* Card Sections */
+    .card-section {
+        position: relative;
+        z-index: 1;
+        margin-bottom: 2rem;
+    }
+
+    .section-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin-bottom: 1.5rem;
+        color: #f2f2f2;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .section-title i {
+        color: #1DB954;
+    }
+
+    /* Info Items */
+    .info-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1rem;
+    }
+
+    .info-item {
+        background: rgba(40, 40, 40, 0.8);
+        border-radius: 10px;
+        padding: 1.25rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        transform: translateZ(0);
+    }
+
+    .info-item:hover {
+        background: rgba(50, 50, 50, 0.9);
+        transform: translateY(-3px) translateZ(0);
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+    }
+
+    .info-icon {
+        width: 48px;
+        height: 48px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.1rem;
+        color: #1DB954;
+        flex-shrink: 0;
+        transition: all 0.3s ease;
+    }
+
+    .info-item:hover .info-icon {
+        transform: scale(1.1);
+        background: rgba(29, 185, 84, 0.2);
+    }
+
+    .info-icon.premium {
+        background: rgba(29, 185, 84, 0.2);
+        color: #1DB954;
+    }
+
+    .info-content {
+        flex: 1;
+    }
+
+    .info-label {
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: #b3b3b3;
+        margin-bottom: 0.25rem;
+    }
+
+    .info-value {
+        font-size: 1.1rem;
+        font-weight: 500;
+        color: #ffffff;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    /* Section Divider */
+    .section-divider {
+        display: flex;
+        align-items: center;
+        margin: 2.5rem 0;
+    }
+
+    .divider-line {
+        flex: 1;
+        height: 1px;
+        background: rgba(255, 255, 255, 0.1);
+    }
+
+    .divider-icon {
+        margin: 0 1rem;
+        width: 40px;
+        height: 40px;
+        background: rgba(29, 185, 84, 0.2);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #1DB954;
+        animation: rotate 10s linear infinite;
+    }
+
+    @keyframes rotate {
+        from {
+            transform: rotate(0deg);
+        }
+
+        to {
+            transform: rotate(360deg);
+        }
+    }
+
+    /* Action Buttons */
+    .action-buttons {
+        margin-top: 2.5rem;
+        display: flex;
+        justify-content: center;
+    }
+
+    .action-buttons form {
+        display: flex;
+        gap: 1rem;
+        width: 100%;
+        max-width: 500px;
+    }
+
+    .action-button {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.75rem;
+        padding: 0.875rem 1.5rem;
+        border: none;
+        border-radius: 30px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+        color: white;
+    }
+
+    .action-button::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+        transition: all 0.6s ease;
+    }
+
+    .action-button:hover::before {
+        left: 100%;
+    }
+
+    .action-button:hover i {
+        transform: translateX(3px);
+    }
+
+    .edit-button {
+        background: #1DB954;
+    }
+
+    .edit-button:hover {
+        background: #1ed760;
+        box-shadow: 0 6px 16px rgba(29, 185, 84, 0.4);
+        transform: translateY(-3px);
+    }
+
+    .delete-button {
+        background: #e74c3c;
+    }
+
+    .delete-button:hover {
+        background: #c0392b;
+        box-shadow: 0 6px 16px rgba(231, 76, 60, 0.4);
+        transform: translateY(-3px);
+    }
+
+    .action-button i {
+        transition: transform 0.3s ease;
+    }
+
+    /* Responsive Adjustments */
+    @media (max-width: 768px) {
+        .spotify-profile-container {
+            padding: 1.5rem 1rem;
+        }
+
+        .profile-title {
+            font-size: 2rem;
+        }
+
+        .section-title {
+            font-size: 1.3rem;
+        }
+
+        .info-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .action-buttons form {
+            flex-direction: column;
+        }
+    }
+</style>
+{% endblock %}

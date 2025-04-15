@@ -1,0 +1,430 @@
+{% extends 'layout.html' %}
+
+{% block title %}Playlist{% endblock %}
+{% block pagetitle %}<i class="fas fa-music fa-1x"></i> <span class="highlight-text">Music Library</span>{% endblock %}
+
+{% block content %}
+<div class="spotify-playlist-container">
+    <div class="main-content">
+        <div class="playlist-header">
+            <div class="navigation-tabs">
+                <a href="{{ url_for('playlist', playlist_id=playlistId)}}" class="nav-tab">
+                    <i class="fas fa-list"></i> Playlist
+                </a>
+                <a href="{{ url_for('songs', playlist_id=playlistId) }}" class="nav-tab active">
+                    <i class="fas fa-music"></i> Songs
+                </a>
+            </div>
+
+            <h1 class="playlist-title">
+                <i class="fas fa-headphones me-2"></i> <span class="highlight-text">Music</span> Library
+            </h1>
+        </div>
+
+        <div class="playlist-table-container">
+            <table id="song" class="playlist-table">
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Artist</th>
+                        <th>Album</th>
+                        <th>Genre</th>
+                        <th>Release</th>
+                        <th>Duration</th>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for s in songs %}
+                    <tr>
+                        <td>{{ s['title'] }}</td>
+                        <td>{{ s['artistName'] }}</td>
+                        <td>{{ s['albumTitle'] }}</td>
+                        <td>{{ s['genreName'] }}</td>
+                        <td>{{ s['releaseDate'] }}</td>
+                        <td>{{ s['duration'] }}</td>
+                        <td>
+                            <form action="" method="post">
+                                <button name="add" value="{{s['songId']}}" class="action-button add-button">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                            </form>
+                        </td>
+                        <td>
+                            <form action="" method="post">
+                                <button name="view" value="{{s['songId']}}" class="action-button view-button">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Reset and Base Styles */
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: 'Circular Std', 'Segoe UI', sans-serif;
+        background: #121212;
+        color: #ffffff;
+        overflow-x: hidden;
+        min-height: 100vh;
+    }
+
+    /* Full page layout */
+    .spotify-playlist-container {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(180deg, #1E1E1E 0%, #121212 100%);
+        overflow: auto;
+        padding: 2rem;
+        animation: fadeIn 0.5s ease-out;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+
+        to {
+            opacity: 1;
+        }
+    }
+
+    .main-content {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 2rem;
+        background: rgba(30, 30, 30, 0.6);
+        backdrop-filter: blur(10px);
+        border-radius: 10px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    }
+
+    /* Header and Navigation */
+    .playlist-header {
+        margin-bottom: 2rem;
+        text-align: center;
+    }
+
+    .navigation-tabs {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 2rem;
+        gap: 1rem;
+    }
+
+    .nav-tab {
+        padding: 0.75rem 1.5rem;
+        background: rgba(40, 40, 40, 0.7);
+        color: #b3b3b3;
+        text-decoration: none;
+        border-radius: 30px;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.3s ease;
+        border: 1px solid transparent;
+    }
+
+    .nav-tab:hover {
+        background: rgba(50, 50, 50, 0.8);
+        color: white;
+        transform: translateY(-2px);
+    }
+
+    .nav-tab.active {
+        background: #1DB954;
+        color: white;
+        position: relative;
+        box-shadow: 0 4px 12px rgba(29, 185, 84, 0.3);
+    }
+
+    .nav-tab.active::before {
+        content: '';
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        border-radius: 30px;
+        background: #1DB954;
+        z-index: -1;
+        opacity: 0.2;
+        filter: blur(8px);
+        animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+        0% {
+            transform: scale(1);
+            opacity: 0.2;
+        }
+
+        50% {
+            transform: scale(1.1);
+            opacity: 0.3;
+        }
+
+        100% {
+            transform: scale(1);
+            opacity: 0.2;
+        }
+    }
+
+    .playlist-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 1.5rem;
+        letter-spacing: -0.5px;
+    }
+
+    .highlight-text {
+        color: #1DB954;
+        text-shadow: 0 0 15px rgba(29, 185, 84, 0.5);
+        animation: textGlow 1.5s infinite alternate;
+    }
+
+    @keyframes textGlow {
+        from {
+            text-shadow: 0 0 5px rgba(29, 185, 84, 0.3);
+        }
+
+        to {
+            text-shadow: 0 0 15px rgba(29, 185, 84, 0.7);
+        }
+    }
+
+    /* Table Styles */
+    .playlist-table-container {
+        overflow-x: auto;
+        border-radius: 8px;
+        background: rgba(18, 18, 18, 0.5);
+    }
+
+    .playlist-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        color: #b3b3b3;
+    }
+
+    .playlist-table thead tr {
+        height: 50px;
+        background: rgba(24, 24, 24, 0.9);
+        position: sticky;
+        top: 0;
+        z-index: 10;
+    }
+
+    .playlist-table th {
+        text-align: left;
+        padding: 0.75rem 1rem;
+        font-weight: 500;
+        font-size: 0.85rem;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .playlist-table tbody tr {
+        height: 60px;
+        border-radius: 4px;
+        transition: background 0.2s ease;
+    }
+
+    .playlist-table tbody tr:hover {
+        background: rgba(255, 255, 255, 0.1);
+    }
+
+    .playlist-table td {
+        padding: 0.75rem 1rem;
+        border-top: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .playlist-table tbody tr:first-child td {
+        border-top: none;
+    }
+
+    /* Action Buttons */
+    .action-button {
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        border: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 0.8rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        opacity: 0.85;
+    }
+
+    .action-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        opacity: 1;
+    }
+
+    .add-button {
+        background: #1DB954;
+    }
+
+    .add-button:hover {
+        background: #1ed760;
+    }
+
+    .view-button {
+        background: #3498db;
+    }
+
+    .view-button:hover {
+        background: #2980b9;
+    }
+
+    /* DataTables Custom Styling */
+    div.dataTables_wrapper div.dataTables_filter {
+        text-align: right;
+        margin-bottom: 1rem;
+    }
+
+    div.dataTables_wrapper div.dataTables_filter input {
+        background: rgba(40, 40, 40, 0.8);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 20px;
+        color: white;
+        padding: 0.6rem 1rem;
+        margin-left: 0.5rem;
+        transition: all 0.3s ease;
+    }
+
+    div.dataTables_wrapper div.dataTables_filter input:focus {
+        outline: none;
+        border-color: #1DB954;
+        box-shadow: 0 0 0 2px rgba(29, 185, 84, 0.2);
+    }
+
+    div.dataTables_wrapper div.dataTables_info {
+        color: #b3b3b3;
+        padding-top: 1rem;
+    }
+
+    div.dataTables_wrapper div.dataTables_paginate {
+        padding-top: 1rem;
+    }
+
+    div.dataTables_wrapper div.dataTables_paginate .paginate_button {
+        border-radius: 20px;
+        padding: 0.4rem 0.8rem;
+        margin: 0 0.2rem;
+        color: #b3b3b3 !important;
+        background: rgba(40, 40, 40, 0.5);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        transition: all 0.3s ease;
+    }
+
+    div.dataTables_wrapper div.dataTables_paginate .paginate_button:hover {
+        background: rgba(50, 50, 50, 0.8) !important;
+        color: white !important;
+        border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    div.dataTables_wrapper div.dataTables_paginate .paginate_button.current,
+    div.dataTables_wrapper div.dataTables_paginate .paginate_button.current:hover {
+        background: #1DB954 !important;
+        color: white !important;
+        border: 1px solid #1DB954;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 992px) {
+        .spotify-playlist-container {
+            padding: 1rem;
+        }
+
+        .main-content {
+            padding: 1.5rem;
+        }
+
+        .playlist-title {
+            font-size: 2rem;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .navigation-tabs {
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .nav-tab {
+            width: 100%;
+            justify-content: center;
+        }
+
+        .playlist-title {
+            font-size: 1.8rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    $(document).ready(function () {
+        $('#song').DataTable({
+            columns: [
+                { orderable: true, searchable: true },
+                { orderable: true, searchable: true },
+                { orderable: true, searchable: true },
+                { orderable: true, searchable: true },
+                { orderable: true, searchable: false },
+                { orderable: true, searchable: false },
+                { orderable: false, searchable: false },
+                { orderable: false, searchable: false },
+            ],
+            "lengthChange": false,
+            "language": {
+                "search": "_INPUT_",
+                "searchPlaceholder": "Search tracks...",
+                "info": "Showing _START_ to _END_ of _TOTAL_ tracks",
+                "paginate": {
+                    "next": "<i class='fas fa-chevron-right'></i>",
+                    "previous": "<i class='fas fa-chevron-left'></i>"
+                }
+            }
+        });
+
+        // Add animation effect to rows on page load
+        $(".playlist-table tbody tr").each(function (index) {
+            $(this).css({
+                'opacity': '0',
+                'transform': 'translateY(10px)'
+            });
+
+            setTimeout(() => {
+                $(this).css({
+                    'opacity': '1',
+                    'transform': 'translateY(0)',
+                    'transition': 'all 0.3s ease'
+                });
+            }, 100 + (index * 50));
+        });
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Paatalu - {% block title %}{% endblock %}</title>
+	<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.1/css/all.css">
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet"
+		integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
+	<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.25/css/dataTables.bootstrap5.css">
+	<style>
+		:root {
+			--primary-color: #1DB954;
+			--primary-dark: #169c45;
+			--primary-light: #1ed760;
+			--primary-gradient: linear-gradient(45deg, #1DB954, #1ed760);
+			--primary-shadow: rgba(29, 185, 84, 0.3);
+			--bg-dark: #121212;
+			--bg-darker: #0a0a0a;
+			--bg-light: #1e1e1e;
+			--bg-lighter: #282828;
+			--text-primary: #ffffff;
+			--text-secondary: #b3b3b3;
+			--text-inactive: #727272;
+			--accent-gradient: linear-gradient(to right, #1DB954, #1ed760);
+			--danger: #e4405f;
+			--warning: #fac83c;
+			--success: #1DB954;
+		}
+
+		/* Base styles */
+		* {
+			margin: 0;
+			padding: 0;
+			box-sizing: border-box;
+		}
+
+		body {
+			background: var(--bg-dark);
+			background-image:
+				radial-gradient(circle at 10% 10%, rgba(29, 185, 84, 0.08) 0%, transparent 70%),
+				radial-gradient(circle at 90% 90%, rgba(29, 185, 84, 0.08) 0%, transparent 70%);
+			color: var(--text-primary);
+			font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+			margin: 0;
+			padding: 0;
+			min-height: 100vh;
+			transition: background-color 0.3s ease;
+			overflow-x: hidden;
+		}
+
+		/* App layout */
+		.loggedin {
+			padding-top: 80px;
+			min-height: 100vh;
+			display: flex;
+			flex-direction: column;
+		}
+
+		/* Modern Navbar with animations */
+		.navtop {
+			background: rgba(10, 10, 10, 0.8);
+			backdrop-filter: blur(20px);
+			height: 80px;
+			width: 100%;
+			border: 0;
+			border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+			position: fixed;
+			top: 0;
+			left: 0;
+			z-index: 1000;
+			box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+			animation: fadeInDown 0.8s ease-out;
+		}
+
+		@keyframes fadeInDown {
+			from {
+				opacity: 0;
+				transform: translateY(-20px);
+			}
+
+			to {
+				opacity: 1;
+				transform: translateY(0);
+			}
+		}
+
+		.navtop div {
+			display: flex;
+			align-items: center;
+			height: 100%;
+			width: 100%;
+			max-width: 1400px;
+			margin: 0 auto;
+			padding: 0 20px;
+		}
+
+		.navtop h1 {
+			margin: 0;
+			padding: 0 0 0 20px;
+			font-size: 24px;
+			font-weight: 700;
+			color: var(--text-primary);
+		}
+
+		.navtop h1:first-child {
+			margin-right: auto;
+			padding-left: 0;
+		}
+
+		.navtop h1.logo {
+			background: var(--accent-gradient);
+			-webkit-background-clip: text;
+			background-clip: text;
+			color: transparent;
+			font-weight: 800;
+			letter-spacing: 0.5px;
+			display: flex;
+			align-items: center;
+			text-shadow: 0 0 20px rgba(29, 185, 84, 0.3);
+			position: relative;
+		}
+
+		.navtop h1.logo i {
+			margin-right: 8px;
+			font-size: 20px;
+			animation: pulse 2s infinite;
+		}
+
+		@keyframes pulse {
+			0% {
+				text-shadow: 0 0 0 rgba(29, 185, 84, 0);
+			}
+
+			50% {
+				text-shadow: 0 0 10px rgba(29, 185, 84, 0.5);
+			}
+
+			100% {
+				text-shadow: 0 0 0 rgba(29, 185, 84, 0);
+			}
+		}
+
+		.navtop a {
+			text-decoration: none;
+			color: var(--text-secondary);
+			margin: 0 20px;
+			font-weight: 500;
+			position: relative;
+			transition: all 0.3s ease;
+			display: flex;
+			align-items: center;
+			letter-spacing: 0.3px;
+		}
+
+		.navtop a:hover {
+			color: var(--text-primary);
+			transform: translateY(-2px);
+		}
+
+		.navtop a::after {
+			content: '';
+			position: absolute;
+			bottom: -10px;
+			left: 0;
+			width: 0;
+			height: 3px;
+			background: var(--primary-gradient);
+			transition: width 0.3s ease;
+			border-radius: 3px;
+		}
+
+		.navtop a:hover::after {
+			width: 100%;
+		}
+
+		.navtop a i {
+			margin-right: 8px;
+			font-size: 16px;
+			transition: transform 0.3s ease;
+		}
+
+		.navtop a:hover i {
+			transform: scale(1.2);
+			color: var(--primary-color);
+		}
+
+		/* Content container with fade-in animation */
+		.content {
+			width: 100%;
+			padding: 0;
+			flex: 1;
+			animation: fadeIn 0.8s ease-out;
+			position: relative;
+		}
+
+		@keyframes fadeIn {
+			from {
+				opacity: 0;
+			}
+
+			to {
+				opacity: 1;
+			}
+		}
+
+		/* Ambient background effects */
+		.content::before {
+			content: '';
+			position: fixed;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+			background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><circle cx="50" cy="50" r="1" fill="%23ffffff" opacity="0.05"/></svg>') repeat;
+			pointer-events: none;
+			z-index: -1;
+			opacity: 0.3;
+		}
+
+		/* Utility classes for the modern UI */
+		.highlight-text {
+			background: var(--accent-gradient);
+			-webkit-background-clip: text;
+			background-clip: text;
+			color: transparent;
+			font-weight: 700;
+		}
+
+		/* Custom scrollbar */
+		::-webkit-scrollbar {
+			width: 8px;
+			height: 8px;
+		}
+
+		::-webkit-scrollbar-track {
+			background: rgba(30, 30, 30, 0.7);
+		}
+
+		::-webkit-scrollbar-thumb {
+			background: var(--primary-color);
+			border-radius: 10px;
+		}
+
+		::-webkit-scrollbar-thumb:hover {
+			background: var(--primary-light);
+		}
+
+		/* Responsive adjustments */
+		@media (max-width: 768px) {
+			.navtop {
+				height: auto;
+				padding: 15px 0;
+			}
+
+			.navtop div {
+				flex-direction: column;
+				padding: 0 15px;
+			}
+
+			.navtop h1 {
+				padding: 5px 0;
+			}
+
+			.navtop h1:first-child {
+				padding-left: 0;
+			}
+
+			.navtop a {
+				margin: 8px 0;
+			}
+
+			.loggedin {
+				padding-top: 120px;
+			}
+		}
+	</style>
+</head>
+
+<body class="loggedin">
+	<nav class="navtop">
+		<div>
+			<h1>{% block pagetitle %}{% endblock %}</h1>
+			<h1 class="logo"><i class="fas fa-music"></i> Paatalu</h1>
+			<a href="{{ url_for('home') }}" class="nav-link"><i class="fas fa-home"></i>Home</a>
+			<a href="{{ url_for('profile') }}" class="nav-link"><i class="fas fa-user-circle"></i>Profile</a>
+			<a href="{{ url_for('logout') }}" class="nav-link"><i class="fas fa-sign-out-alt"></i>Logout</a>
+		</div>
+	</nav>
+	<div class="content">
+		{% block content %}{% endblock %}
+	</div>
+
+	<script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	<script type="text/javascript" charset="utf8"
+		src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.js"></script>
+	<script type="text/javascript" charset="utf8"
+		src="https://cdn.datatables.net/1.10.25/js/dataTables.bootstrap5.js"></script>
+	<script>
+		// Add active state to current nav item
+		$(document).ready(function () {
+			// Get current URL path
+			var path = window.location.pathname;
+
+			// Highlight the active nav link
+			$('.nav-link').each(function () {
+				var href = $(this).attr('href');
+				if (path === href) {
+					$(this).css('color', 'var(--text-primary)');
+					$(this).find('i').css('color', 'var(--primary-color)');
+					$(this).css('font-weight', '600');
+					$(this).css('transform', 'translateY(-2px)');
+					$(this).css('position', 'relative');
+					$(this).append('<span class="active-indicator"></span>');
+				}
+			});
+		});
+	</script>
+	{% block scripts %}{% endblock %}
+</body>
+
+</html>

@@ -1,0 +1,547 @@
+{% extends 'layout.html' %}
+
+{% block title %}Home{% endblock %}
+
+{% block pagetitle %}<span class="highlight-text">Home</span>{% endblock %}
+
+{% block content %}
+<!-- Full page wrapper -->
+<div class="page-wrapper">
+    <div class="container-fluid px-4 py-5">
+        <div class="row">
+            <div class="col-12">
+                <!-- Glass-morphism card effect -->
+                <div class="card border-0 bg-transparent backdrop-blur main-card">
+                    <div class="glass-effect position-relative overflow-hidden rounded-4">
+                        <!-- Animated ambient background -->
+                        <div class="ambient-background"></div>
+
+                        <div class="card-body p-4 position-relative">
+                            <div class="d-flex justify-content-between align-items-center mb-4">
+                                <h2 class="display-5 text-white fw-bold mb-0 animate-title">
+                                    <i class="fas fa-music me-2"></i> <span class="highlight-text">My</span> Playlists
+                                </h2>
+                                <form action="" method="post">
+                                    <button name="new" class="btn-glow">
+                                        <span class="btn-text">New Playlist</span>
+                                        <span class="btn-icon"><i class="fas fa-plus"></i></span>
+                                    </button>
+                                </form>
+                            </div>
+
+                            {% if error %}
+                            <div class="alert alert-danger alert-glow mb-4" role="alert">
+                                <i class="fas fa-exclamation-circle me-2"></i> {{ error }}
+                            </div>
+                            {% endif %}
+
+                            <div class="table-responsive playlist-table-container">
+                                <table id="playlists" class="table table-hover custom-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Name</th>
+                                            <th>Status</th>
+                                            <th>Tracks</th>
+                                            <th>Duration</th>
+                                            <th class="text-center">View</th>
+                                            <th class="text-center">Remove</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {%for i in playlists%}
+                                        <tr class="playlist-row">
+                                            <td>{{i['name']}}</td>
+                                            <td>
+                                                <span class="status-badge status-{{i['status'] | lower}}">
+                                                    {{i['status']}}
+                                                </span>
+                                            </td>
+                                            <td>{{i['tracks']}}</td>
+                                            <td>{{i['duration']}}</td>
+                                            <td class="text-center">
+                                                <form action="" method="post">
+                                                    <button class="btn-action" name="view" value="{{i['playlistId']}}">
+                                                        <i class="fas fa-eye"></i>
+                                                    </button>
+                                                </form>
+                                            </td>
+                                            <td class="text-center">
+                                                <form action="" method="post">
+                                                    <button class="btn-action btn-remove" name="remove"
+                                                        value="{{i['playlistId']}}">
+                                                        <i class="fas fa-trash-alt"></i>
+                                                    </button>
+                                                </form>
+                                            </td>
+                                        </tr>
+                                        {%endfor%}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Modern dark theme inspired by Spotify */
+    body {
+        background-color: #121212;
+        color: #ffffff;
+        min-height: 100vh;
+        margin: 0;
+        padding: 0;
+        overflow-x: hidden;
+    }
+
+    .page-wrapper {
+        min-height: 100vh;
+        background: linear-gradient(135deg, #121212 0%, #1e1e1e 100%);
+        padding: 0;
+        margin: 0;
+        width: 100%;
+    }
+
+    .container-fluid {
+        height: 100%;
+    }
+
+    .main-card {
+        height: calc(100vh - 120px);
+        max-height: 100%;
+        overflow: hidden;
+    }
+
+    /* Glass-morphism effect */
+    .glass-effect {
+        background: rgba(30, 30, 30, 0.7);
+        backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        height: 100%;
+    }
+
+    /* Animated ambient background */
+    .ambient-background {
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        right: -50%;
+        bottom: -50%;
+        width: 200%;
+        height: 200%;
+        background: transparent url('https://cdnjs.cloudflare.com/ajax/libs/emojione/2.2.7/assets/svg/1f30c.svg') repeat 0 0;
+        background-size: 100px 100px;
+        opacity: 0.03;
+        animation: ambient-shift 90s linear infinite;
+        z-index: -1;
+    }
+
+    @keyframes ambient-shift {
+        0% {
+            transform: rotate(0deg);
+        }
+
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+
+    /* Title animation */
+    .animate-title {
+        animation: fadeInDown 0.8s ease-out;
+    }
+
+    @keyframes fadeInDown {
+        from {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .highlight-text {
+        background: linear-gradient(to right, #1DB954, #1ed760);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        text-shadow: 0 0 10px rgba(29, 185, 84, 0.3);
+    }
+
+    /* Table container */
+    .playlist-table-container {
+        height: calc(100% - 70px);
+        animation: fadeIn 0.6s ease-out 0.3s both;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+
+        to {
+            opacity: 1;
+        }
+    }
+
+    /* Table styling */
+    .custom-table {
+        color: #b3b3b3;
+        border-collapse: separate;
+        border-spacing: 0 8px;
+        width: 100%;
+    }
+
+    .custom-table thead th {
+        border: none;
+        padding: 15px;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        background: rgba(255, 255, 255, 0.05);
+        color: #b3b3b3;
+        text-transform: uppercase;
+        font-size: 0.8rem;
+        position: sticky;
+        top: 0;
+        z-index: 10;
+    }
+
+    .playlist-row {
+        animation: slideIn 0.4s ease-out forwards;
+        opacity: 0;
+    }
+
+    @keyframes slideIn {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .custom-table tbody tr {
+        background: rgba(40, 40, 40, 0.7);
+        transition: all 0.3s ease;
+        border-radius: 8px;
+        cursor: pointer;
+    }
+
+    .custom-table tbody tr:hover {
+        background: rgba(60, 60, 60, 0.9);
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .custom-table td {
+        padding: 15px;
+        border: none;
+        vertical-align: middle;
+        color: #ffffff;
+    }
+
+    /* Apply sequential animation delay to table rows */
+    .custom-table tbody tr:nth-child(1) {
+        animation-delay: 0.1s;
+    }
+
+    .custom-table tbody tr:nth-child(2) {
+        animation-delay: 0.2s;
+    }
+
+    .custom-table tbody tr:nth-child(3) {
+        animation-delay: 0.3s;
+    }
+
+    .custom-table tbody tr:nth-child(4) {
+        animation-delay: 0.4s;
+    }
+
+    .custom-table tbody tr:nth-child(5) {
+        animation-delay: 0.5s;
+    }
+
+    .custom-table tbody tr:nth-child(6) {
+        animation-delay: 0.6s;
+    }
+
+    .custom-table tbody tr:nth-child(7) {
+        animation-delay: 0.7s;
+    }
+
+    .custom-table tbody tr:nth-child(8) {
+        animation-delay: 0.8s;
+    }
+
+    .custom-table tbody tr:nth-child(9) {
+        animation-delay: 0.9s;
+    }
+
+    .custom-table tbody tr:nth-child(10) {
+        animation-delay: 1.0s;
+    }
+
+    /* Status badges */
+    .status-badge {
+        padding: 6px 14px;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        display: inline-block;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+        transition: all 0.3s ease;
+    }
+
+    .status-badge:hover {
+        transform: scale(1.05);
+    }
+
+    .status-active {
+        background: rgba(29, 185, 84, 0.2);
+        color: #1DB954;
+        border: 1px solid rgba(29, 185, 84, 0.3);
+    }
+
+    .status-pending {
+        background: rgba(250, 200, 60, 0.2);
+        color: #fac83c;
+        border: 1px solid rgba(250, 200, 60, 0.3);
+    }
+
+    .status-inactive {
+        background: rgba(228, 64, 95, 0.2);
+        color: #e4405f;
+        border: 1px solid rgba(228, 64, 95, 0.3);
+    }
+
+    /* Button styling */
+    .btn-glow {
+        background: linear-gradient(45deg, #1DB954, #1ed760);
+        border: none;
+        border-radius: 50px;
+        padding: 12px 24px;
+        color: white;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        position: relative;
+        overflow: hidden;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 15px rgba(29, 185, 84, 0.3);
+    }
+
+    .btn-glow:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(29, 185, 84, 0.4);
+    }
+
+    .btn-glow:before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+        transform: translateX(-100%);
+        transition: all 0.6s ease;
+    }
+
+    .btn-glow:hover:before {
+        transform: translateX(100%);
+    }
+
+    .btn-text {
+        margin-right: 10px;
+    }
+
+    .btn-icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        transition: transform 0.3s ease;
+    }
+
+    .btn-glow:hover .btn-icon {
+        transform: rotate(90deg);
+    }
+
+    /* Action buttons */
+    .btn-action {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: rgba(30, 30, 30, 0.7);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: #b3b3b3;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+
+    .btn-action:hover {
+        background: rgba(29, 185, 84, 0.2);
+        color: #1DB954;
+        transform: translateY(-3px);
+        box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+    }
+
+    .btn-remove:hover {
+        background: rgba(228, 64, 95, 0.2);
+        color: #e4405f;
+    }
+
+    /* Alert styling */
+    .alert-glow {
+        background: rgba(228, 64, 95, 0.1);
+        border: 1px solid rgba(228, 64, 95, 0.3);
+        color: #e4405f;
+        border-radius: 12px;
+        animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+        0% {
+            box-shadow: 0 0 0 0 rgba(228, 64, 95, 0.4);
+        }
+
+        70% {
+            box-shadow: 0 0 0 10px rgba(228, 64, 95, 0);
+        }
+
+        100% {
+            box-shadow: 0 0 0 0 rgba(228, 64, 95, 0);
+        }
+    }
+
+    /* DataTables customization */
+    .dataTables_wrapper .dataTables_filter {
+        margin-bottom: 20px;
+    }
+
+    .dataTables_wrapper .dataTables_filter input {
+        background: rgba(40, 40, 40, 0.7);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: white;
+        border-radius: 50px;
+        padding: 10px 15px 10px 40px;
+        width: 250px;
+        transition: all 0.3s ease;
+    }
+
+    .dataTables_wrapper .dataTables_filter input:focus {
+        box-shadow: 0 0 15px rgba(29, 185, 84, 0.3);
+        border: 1px solid rgba(29, 185, 84, 0.3);
+        outline: none;
+    }
+
+    .dataTables_wrapper .dataTables_filter label {
+        color: rgba(255, 255, 255, 0.8);
+        position: relative;
+    }
+
+    .dataTables_wrapper .dataTables_filter label::before {
+        content: "\f002";
+        font-family: "Font Awesome 5 Free";
+        font-weight: 900;
+        position: absolute;
+        left: 15px;
+        top: 10px;
+        color: #b3b3b3;
+        z-index: 1;
+    }
+
+    .dataTables_wrapper .dataTables_info,
+    .dataTables_wrapper .dataTables_paginate {
+        color: #b3b3b3 !important;
+        margin-top: 20px;
+        font-size: 0.9rem;
+    }
+
+    .dataTables_wrapper .dataTables_paginate .paginate_button {
+        color: #b3b3b3 !important;
+        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        border-radius: 50px !important;
+        background: rgba(40, 40, 40, 0.7) !important;
+        padding: 5px 12px !important;
+        margin: 0 3px;
+        transition: all 0.3s ease !important;
+    }
+
+    .dataTables_wrapper .dataTables_paginate .paginate_button.current,
+    .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+        background: rgba(29, 185, 84, 0.2) !important;
+        color: #1DB954 !important;
+        border: 1px solid rgba(29, 185, 84, 0.3) !important;
+        box-shadow: 0 0 10px rgba(29, 185, 84, 0.2);
+    }
+
+    /* Custom scrollbar */
+    ::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+        background: rgba(30, 30, 30, 0.7);
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background: #1DB954;
+        border-radius: 10px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+        background: #1ed760;
+    }
+</style>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    $(document).ready(function () {
+        // Fix search icon display
+        $(".dataTables_filter label").html(function (index, html) {
+            return html.replace("<i class='fas fa-search'></i> INPUT", "");
+        });
+
+        var table = $('#playlists').DataTable({
+            columns: [
+                { searchable: true },
+                { searchable: true },
+                { orderable: true, searchable: true },
+                { orderable: false, searchable: false },
+                { orderable: false, searchable: false },
+                { orderable: false, searchable: false },
+            ],
+            "lengthChange": false,
+            "language": {
+                "search": "",
+                "searchPlaceholder": "Search playlists...",
+                "info": "Showing _START_ to _END_ of _TOTAL_ playlists",
+                "paginate": {
+                    "first": "<i class='fas fa-angle-double-left'></i>",
+                    "last": "<i class='fas fa-angle-double-right'></i>",
+                    "next": "<i class='fas fa-angle-right'></i>",
+                    "previous": "<i class='fas fa-angle-left'></i>"
+                }
+            }
+        });
+    });
+</script>
+{% endblock %}

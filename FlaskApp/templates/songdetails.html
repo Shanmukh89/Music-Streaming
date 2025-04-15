@@ -1,0 +1,423 @@
+{% extends 'layout.html' %}
+
+{% block title %}Song Details{% endblock %}
+
+{% block pagetitle %}<i class="fas fa-music"></i>{% endblock %}
+
+{% block content %}
+<div class="song-details-container">
+    <div class="song-content-wrapper">
+        <div class="song-card">
+            <div class="song-header">
+                <h1 class="song-title">
+                    <i class="fas fa-music pulse-icon"></i> <span class="gradient-text">Song</span> Details
+                </h1>
+            </div>
+
+            <div class="song-content">
+                <div class="song-image-container">
+                    <div class="album-disc">
+                        <div class="disc-inner"></div>
+                    </div>
+                    <img src="{{url_for('static', filename=song['coverArt'])}}" alt="Album Cover" class="song-cover">
+                </div>
+
+                <div class="song-info">
+                    <div class="info-item animate-in">
+                        <span class="info-label"><i class="fas fa-music"></i>Title</span>
+                        <span class="info-value">{{song['title']}}</span>
+                    </div>
+
+                    <div class="info-item animate-in" style="animation-delay: 100ms;">
+                        <span class="info-label"><i class="fas fa-user"></i>Artist</span>
+                        <span class="info-value">{{song['artistName']}}</span>
+                    </div>
+
+                    <div class="info-item animate-in" style="animation-delay: 200ms;">
+                        <span class="info-label"><i class="fas fa-compact-disc"></i>Album</span>
+                        <span class="info-value">{{song['albumTitle']}}</span>
+                    </div>
+
+                    <div class="divider">
+                        <div class="sound-wave">
+                            <span></span><span></span><span></span><span></span><span></span>
+                        </div>
+                    </div>
+
+                    <div class="info-item animate-in" style="animation-delay: 300ms;">
+                        <span class="info-label"><i class="fas fa-guitar"></i>Genre</span>
+                        <span class="info-value">{{song['genreName']}}</span>
+                    </div>
+
+                    <div class="info-item animate-in" style="animation-delay: 400ms;">
+                        <span class="info-label"><i class="fas fa-calendar-alt"></i>Release</span>
+                        <span class="info-value">{{song['releaseDate']}}</span>
+                    </div>
+
+                    <div class="info-item animate-in" style="animation-delay: 500ms;">
+                        <span class="info-label"><i class="fas fa-clock"></i>Duration</span>
+                        <span class="info-value">{{song['duration']}}</span>
+                    </div>
+
+                    <div class="button-container animate-in" style="animation-delay: 600ms;">
+                        <form action="" method="post">
+                            <button type="submit" name="back" class="back-button">
+                                <i class="fas fa-arrow-left"></i>
+                                <span>Back</span>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Reset and base styles */
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: 'Gotham', 'Montserrat', sans-serif;
+        background: #121212;
+        color: #fff;
+        min-height: 100vh;
+        margin: 0;
+        overflow-x: hidden;
+    }
+
+    /* Background gradient */
+    .song-details-container {
+        min-height: 100vh;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(to bottom, rgba(18, 18, 18, 0.8) 0%, #121212 100%);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .song-details-container::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 100vh;
+        background: radial-gradient(circle at top, rgba(29, 185, 84, 0.3) 0%, transparent 70%);
+        pointer-events: none;
+        opacity: 0.4;
+    }
+
+    /* Content area */
+    .song-content-wrapper {
+        width: 100%;
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 2rem;
+        z-index: 1;
+    }
+
+    .song-card {
+        background: rgba(30, 30, 30, 0.7);
+        backdrop-filter: blur(10px);
+        border-radius: 12px;
+        padding: 2rem;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        transition: all 0.3s ease;
+    }
+
+    /* Song header */
+    .song-header {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+
+    .song-title {
+        font-size: 2.5rem;
+        font-weight: 800;
+        letter-spacing: -0.5px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+
+    .gradient-text {
+        background: linear-gradient(to right, #1DB954, #1ED760);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+    }
+
+    .pulse-icon {
+        animation: pulse 1.5s infinite;
+        color: #1DB954;
+    }
+
+    /* Song content layout */
+    .song-content {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 2rem;
+    }
+
+    @media (min-width: 768px) {
+        .song-content {
+            grid-template-columns: 300px 1fr;
+        }
+    }
+
+    /* Album cover styling */
+    .song-image-container {
+        position: relative;
+        width: 280px;
+        height: 280px;
+        margin: 0 auto;
+        perspective: 1000px;
+    }
+
+    .song-cover {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 8px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+        transition: all 0.5s ease;
+        transform-style: preserve-3d;
+    }
+
+    .song-image-container:hover .song-cover {
+        transform: translateY(-10px);
+        box-shadow: 0 30px 50px rgba(0, 0, 0, 0.5);
+    }
+
+    .album-disc {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        background: #000;
+        opacity: 0;
+        transform: translateY(40%) scale(0.7);
+        z-index: -1;
+        transition: all 0.5s ease;
+    }
+
+    .disc-inner {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 30%;
+        height: 30%;
+        transform: translate(-50%, -50%);
+        background: #333;
+        border-radius: 50%;
+        border: 2px solid #555;
+    }
+
+    .song-image-container:hover .album-disc {
+        opacity: 0.8;
+        transform: translateY(30%) scale(0.9);
+    }
+
+    /* Info items styling */
+    .song-info {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .info-item {
+        display: flex;
+        flex-direction: column;
+        background: rgba(40, 40, 40, 0.5);
+        border-radius: 8px;
+        padding: 1rem;
+        border-left: 3px solid #1DB954;
+        transition: all 0.3s ease;
+        opacity: 0;
+        transform: translateY(10px);
+        animation: fadeInUp 0.5s forwards;
+    }
+
+    .info-item:hover {
+        background: rgba(50, 50, 50, 0.7);
+        transform: translateX(5px);
+    }
+
+    .info-label {
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 0.5rem;
+        color: rgba(255, 255, 255, 0.7);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .info-label i {
+        color: #1DB954;
+    }
+
+    .info-value {
+        font-size: 1.1rem;
+        font-weight: 500;
+        color: #fff;
+    }
+
+    /* Divider with sound wave animation */
+    .divider {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 1rem 0;
+        height: 30px;
+    }
+
+    .sound-wave {
+        display: flex;
+        align-items: center;
+        height: 30px;
+        gap: 3px;
+    }
+
+    .sound-wave span {
+        display: block;
+        width: 4px;
+        height: 100%;
+        background: #1DB954;
+        border-radius: 8px;
+        animation: soundWave 1.5s infinite;
+    }
+
+    .sound-wave span:nth-child(1) {
+        animation-delay: 0.1s;
+        height: 30%;
+    }
+
+    .sound-wave span:nth-child(2) {
+        animation-delay: 0.2s;
+        height: 60%;
+    }
+
+    .sound-wave span:nth-child(3) {
+        animation-delay: 0.3s;
+        height: 100%;
+    }
+
+    .sound-wave span:nth-child(4) {
+        animation-delay: 0.4s;
+        height: 60%;
+    }
+
+    .sound-wave span:nth-child(5) {
+        animation-delay: 0.5s;
+        height: 30%;
+    }
+
+    /* Button styling */
+    .button-container {
+        margin-top: 1.5rem;
+    }
+
+    .back-button {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        background: #1DB954;
+        color: #000;
+        border: none;
+        border-radius: 50px;
+        padding: 1rem;
+        font-size: 1rem;
+        font-weight: 700;
+        letter-spacing: 1px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .back-button::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+        transition: all 0.6s ease;
+    }
+
+    .back-button:hover {
+        background: #1ED760;
+        transform: translateY(-2px);
+        box-shadow: 0 10px 20px rgba(29, 185, 84, 0.3);
+    }
+
+    .back-button:hover::before {
+        left: 100%;
+    }
+
+    .back-button i {
+        font-size: 1.2rem;
+        transition: transform 0.3s ease;
+    }
+
+    .back-button:hover i {
+        transform: translateX(-5px);
+    }
+
+    /* Animations */
+    @keyframes pulse {
+        0% {
+            transform: scale(1);
+        }
+
+        50% {
+            transform: scale(1.1);
+        }
+
+        100% {
+            transform: scale(1);
+        }
+    }
+
+    @keyframes soundWave {
+        0% {
+            transform: scaleY(0.3);
+        }
+
+        50% {
+            transform: scaleY(1);
+        }
+
+        100% {
+            transform: scaleY(0.3);
+        }
+    }
+
+    @keyframes fadeInUp {
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .animate-in {
+        opacity: 0;
+        transform: translateY(10px);
+        animation: fadeInUp 0.5s forwards;
+    }
+</style>
+{% endblock %}
