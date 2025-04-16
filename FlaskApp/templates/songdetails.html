@@ -59,14 +59,42 @@
                         <span class="info-value">{{song['duration']}}</span>
                     </div>
 
+                    <div class="info-item animate-in" style="animation-delay: 550ms;">
+                        <span class="info-label"><i class="fas fa-heart"></i>Likes</span>
+                        <span class="info-value" id="likeCount">{{song['likeCount']}}</span>
+                    </div>
+
                     <div class="button-container animate-in" style="animation-delay: 600ms;">
-                        <form action="" method="post">
+                        <button id="likeButton" class="like-button" data-song-id="{{song['songId']}}">
+                            <i class="fas fa-heart"></i>
+                            <span>Like</span>
+                        </button>
+                        <form action="" method="post" style="display: inline-block;">
                             <button type="submit" name="back" class="back-button">
                                 <i class="fas fa-arrow-left"></i>
                                 <span>Back</span>
                             </button>
                         </form>
                     </div>
+                </div>
+            </div>
+
+            <!-- Add comments section -->
+            <div class="comments-section animate-in" style="animation-delay: 700ms;">
+                <div class="comments-header">
+                    <h2><i class="fas fa-comments"></i> Comments</h2>
+                </div>
+                
+                <div class="comment-form">
+                    <textarea id="commentInput" placeholder="Write a comment..." rows="3"></textarea>
+                    <button id="submitComment" class="comment-button">
+                        <i class="fas fa-paper-plane"></i>
+                        <span>Post Comment</span>
+                    </button>
+                </div>
+
+                <div class="comments-list" id="commentsList">
+                    <!-- Comments will be loaded here -->
                 </div>
             </div>
         </div>
@@ -419,5 +447,398 @@
         transform: translateY(10px);
         animation: fadeInUp 0.5s forwards;
     }
+
+    .like-button {
+        background: #1DB954;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 20px;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        margin-right: 10px;
+    }
+
+    .like-button:hover {
+        background: #1ED760;
+        transform: translateY(-2px);
+    }
+
+    .like-button.liked {
+        background: #E91E63;
+    }
+
+    .like-button.liked:hover {
+        background: #FF4081;
+    }
+
+    .like-button i {
+        font-size: 1.1rem;
+    }
+
+    /* Comments section styles */
+    .comments-section {
+        margin-top: 2rem;
+        padding-top: 2rem;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .comments-header {
+        margin-bottom: 1.5rem;
+    }
+
+    .comments-header h2 {
+        font-size: 1.5rem;
+        color: #fff;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .comments-header i {
+        color: #1DB954;
+    }
+
+    .comment-form {
+        margin-bottom: 2rem;
+    }
+
+    #commentInput {
+        width: 100%;
+        padding: 1rem;
+        background: rgba(40, 40, 40, 0.5);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 8px;
+        color: #fff;
+        font-size: 1rem;
+        resize: vertical;
+        margin-bottom: 1rem;
+        transition: all 0.3s ease;
+    }
+
+    #commentInput:focus {
+        outline: none;
+        background: rgba(50, 50, 50, 0.7);
+        border-color: #1DB954;
+    }
+
+    .comment-button {
+        background: #1DB954;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 20px;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .comment-button:hover {
+        background: #1ED760;
+        transform: translateY(-2px);
+    }
+
+    .comment-button i {
+        font-size: 1.1rem;
+    }
+
+    .comments-list {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .comment-item {
+        background: rgba(40, 40, 40, 0.5);
+        border-radius: 8px;
+        padding: 1rem;
+        border-left: 3px solid #1DB954;
+        animation: fadeInUp 0.5s ease forwards;
+    }
+
+    .comment-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.5rem;
+    }
+
+    .comment-user {
+        font-weight: 600;
+        color: #1DB954;
+    }
+
+    .comment-date {
+        font-size: 0.8rem;
+        color: rgba(255, 255, 255, 0.6);
+    }
+
+    .comment-text {
+        color: #fff;
+        line-height: 1.5;
+    }
+
+    .comment-actions {
+        margin-top: 0.5rem;
+        display: flex;
+        justify-content: flex-end;
+    }
+
+    .delete-comment {
+        background: none;
+        border: none;
+        color: #ff4444;
+        cursor: pointer;
+        font-size: 0.9rem;
+        padding: 4px 8px;
+        border-radius: 4px;
+        transition: all 0.3s ease;
+    }
+
+    .delete-comment:hover {
+        background: rgba(255, 68, 68, 0.1);
+    }
+
+    .no-comments {
+        text-align: center;
+        color: rgba(255, 255, 255, 0.6);
+        padding: 2rem;
+        font-style: italic;
+    }
 </style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const likeButton = document.getElementById('likeButton');
+    const likeCount = document.getElementById('likeCount');
+    
+    if (!likeButton || !likeCount) {
+        console.error('Required elements not found:', {
+            likeButton: !!likeButton,
+            likeCount: !!likeCount
+        });
+        return;
+    }
+
+    let isLiked = false;
+    const songId = likeButton.dataset.songId;
+
+    if (!songId) {
+        console.error('No song ID found in button data attribute');
+        return;
+    }
+
+    console.log('Initializing like functionality for song:', songId);
+
+    // Check if song is liked on page load
+    const checkLikeUrl = `/song/is_liked/${songId}`;
+    console.log('Checking like status at:', checkLikeUrl);
+    
+    fetch(checkLikeUrl)
+        .then(response => {
+            console.log('Status check response:', response.status);
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('Initial like status:', data);
+            isLiked = data.liked;
+            updateLikeButton();
+        })
+        .catch(error => {
+            console.error('Error checking like status:', error);
+        });
+
+    likeButton.addEventListener('click', function(e) {
+        e.preventDefault();
+        console.log('Like button clicked. Current state:', isLiked);
+        
+        const endpoint = isLiked ? `/song/unlike/${songId}` : `/song/like/${songId}`;
+        console.log('Using endpoint:', endpoint);
+
+        fetch(endpoint, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            credentials: 'same-origin'
+        })
+        .then(response => {
+            console.log('Like/unlike response:', response.status);
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('Response from server:', data);
+            if (data.success) {
+                isLiked = !isLiked;
+                const currentCount = parseInt(likeCount.textContent) || 0;
+                const newCount = isLiked ? currentCount + 1 : currentCount - 1;
+                console.log('Updating like count from', currentCount, 'to', newCount);
+                likeCount.textContent = newCount;
+                updateLikeButton();
+            } else {
+                console.error('Server returned success: false', data.error);
+                alert('Error updating like status: ' + (data.error || 'Unknown error'));
+            }
+        })
+        .catch(error => {
+            console.error('Error updating like status:', error);
+            alert('Error updating like status: ' + error.message);
+        });
+    });
+
+    function updateLikeButton() {
+        console.log('Updating button state to:', isLiked ? 'liked' : 'not liked');
+        if (isLiked) {
+            likeButton.classList.add('liked');
+            likeButton.querySelector('span').textContent = 'Unlike';
+        } else {
+            likeButton.classList.remove('liked');
+            likeButton.querySelector('span').textContent = 'Like';
+        }
+    }
+});
+
+// Add comments functionality
+document.addEventListener('DOMContentLoaded', function() {
+    const commentsList = document.getElementById('commentsList');
+    const commentInput = document.getElementById('commentInput');
+    const submitComment = document.getElementById('submitComment');
+    const songId = document.getElementById('likeButton').dataset.songId;
+
+    // Load comments
+    function loadComments() {
+        fetch(`/song/comments/${songId}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    displayComments(data.comments);
+                } else {
+                    console.error('Error loading comments:', data.error);
+                }
+            })
+            .catch(error => console.error('Error:', error));
+    }
+
+    // Display comments
+    function displayComments(comments) {
+        commentsList.innerHTML = '';
+        
+        if (comments.length === 0) {
+            commentsList.innerHTML = `
+                <div class="no-comments">
+                    <i class="fas fa-comments"></i>
+                    <p>No comments yet. Be the first to comment!</p>
+                </div>
+            `;
+            return;
+        }
+
+        comments.forEach(comment => {
+            const commentElement = document.createElement('div');
+            commentElement.className = 'comment-item';
+            commentElement.innerHTML = `
+                <div class="comment-header">
+                    <span class="comment-user">${comment.firstName} ${comment.lastName}</span>
+                    <span class="comment-date">${formatDate(comment.createdAt)}</span>
+                </div>
+                <div class="comment-text">${escapeHtml(comment.comment)}</div>
+                ${comment.userId === getUserId() ? `
+                    <div class="comment-actions">
+                        <button class="delete-comment" data-comment-id="${comment.commentId}">
+                            <i class="fas fa-trash"></i> Delete
+                        </button>
+                    </div>
+                ` : ''}
+            `;
+            commentsList.appendChild(commentElement);
+        });
+
+        // Add delete event listeners
+        document.querySelectorAll('.delete-comment').forEach(button => {
+            button.addEventListener('click', function() {
+                deleteComment(this.dataset.commentId);
+            });
+        });
+    }
+
+    // Submit comment
+    submitComment.addEventListener('click', function() {
+        const comment = commentInput.value.trim();
+        if (!comment) return;
+
+        fetch(`/song/comment/${songId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ comment: comment })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                commentInput.value = '';
+                loadComments();
+            } else {
+                alert('Error posting comment: ' + data.error);
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    });
+
+    // Delete comment
+    function deleteComment(commentId) {
+        if (!confirm('Are you sure you want to delete this comment?')) return;
+
+        fetch(`/song/comment/${commentId}`, {
+            method: 'DELETE'
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                loadComments();
+            } else {
+                alert('Error deleting comment: ' + data.error);
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    }
+
+    // Helper functions
+    function formatDate(dateString) {
+        const date = new Date(dateString);
+        return date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
+    }
+
+    function escapeHtml(unsafe) {
+        return unsafe
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
+
+    function getUserId() {
+        // You'll need to implement this based on your session management
+        return {{ session['id'] if 'id' in session else 'null' }};
+    }
+
+    // Load comments when page loads
+    loadComments();
+});
+</script>
 {% endblock %}

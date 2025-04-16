@@ -285,7 +285,9 @@
 			<h1>{% block pagetitle %}{% endblock %}</h1>
 			<h1 class="logo"><i class="fas fa-music"></i> Paatalu</h1>
 			<a href="{{ url_for('home') }}" class="nav-link"><i class="fas fa-home"></i>Home</a>
-			<a href="{{ url_for('profile') }}" class="nav-link"><i class="fas fa-user-circle"></i>Profile</a>
+			<a href="{{ url_for('profile') }}" class="nav-link"><i class="fas fa-user"></i>Profile</a>
+			<a href="{{ url_for('listening_history') }}" class="nav-link"><i class="fas fa-history"></i>History</a>
+			<a href="{{ url_for('chat') }}" class="nav-link"><i class="fas fa-comments"></i>Chat</a>
 			<a href="{{ url_for('logout') }}" class="nav-link"><i class="fas fa-sign-out-alt"></i>Logout</a>
 		</div>
 	</nav>

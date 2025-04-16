@@ -1,0 +1,527 @@
+{% extends 'layout.html' %}
+
+{% block title %}Chat Room{% endblock %}
+
+{% block pagetitle %}<i class="fas fa-comments"></i>{% endblock %}
+
+{% block content %}
+<div class="page-background">
+    <div class="chat-container">
+        <div class="chat-header">
+            <h1><i class="fas fa-comments"></i> Chat Room</h1>
+            <p class="subtitle">Chat with other music lovers</p>
+        </div>
+
+        <div class="chat-box">
+            <div class="messages" id="messages">
+                {% if messages %}
+                {% for message in messages %}
+                <div class="message {% if message.userId == session['id'] %}message-own{% endif %} animate-in"
+                    style="animation-delay: {{ loop.index0 * 50 }}ms">
+                    <div class="message-header">
+                        <span class="user-name">{{ message.firstName }} {{ message.lastName }}</span>
+                        <span class="timestamp">{{ message.createdAt.strftime('%Y-%m-%d %H:%M') }}</span>
+                    </div>
+                    <div class="message-content">
+                        {{ message.message }}
+                    </div>
+                </div>
+                {% endfor %}
+                {% else %}
+                <div class="no-messages">
+                    <i class="fas fa-comments"></i>
+                    <p>No messages yet. Start the conversation!</p>
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="message-input">
+                <textarea id="messageInput" placeholder="Type your message..." rows="2"></textarea>
+                <button id="sendMessage" class="send-button">
+                    <i class="fas fa-paper-plane"></i>
+                    <span>Send</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Full page background styling */
+    .page-background {
+        background-color: #121212;
+        background-image: linear-gradient(135deg, #121212 0%, #181818 100%);
+        color: #fff;
+        font-family: 'Circular', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+        min-height: 100vh;
+        width: 100%;
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: -1;
+    }
+
+    .chat-container {
+        max-width: 100%;
+        margin: 0;
+        padding: 2rem 3rem;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .chat-header {
+        text-align: center;
+        margin-bottom: 2rem;
+        color: #fff;
+        animation: fadeDown 0.8s ease;
+        padding-top: 1rem;
+    }
+
+    @keyframes fadeDown {
+        from {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .chat-header h1 {
+        font-size: 2.8rem;
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 1rem;
+        font-weight: 700;
+        letter-spacing: -0.5px;
+        color: white;
+    }
+
+    .chat-header i {
+        color: #1DB954;
+        animation: pulse 2s infinite ease-in-out;
+    }
+
+    @keyframes pulse {
+        0% {
+            transform: scale(1);
+        }
+
+        50% {
+            transform: scale(1.05);
+        }
+
+        100% {
+            transform: scale(1);
+        }
+    }
+
+    .subtitle {
+        color: rgba(255, 255, 255, 0.7);
+        font-size: 1.2rem;
+        font-weight: 300;
+    }
+
+    .chat-box {
+        background: rgba(25, 25, 25, 0.8);
+        border-radius: 16px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        height: calc(100vh - 150px);
+        flex-grow: 1;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+        backdrop-filter: blur(15px);
+        animation: scaleIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    @keyframes scaleIn {
+        from {
+            opacity: 0;
+            transform: scale(0.95);
+        }
+
+        to {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+
+    .messages {
+        flex-grow: 1;
+        overflow-y: auto;
+        padding: 1.8rem;
+        display: flex;
+        flex-direction: column;
+        gap: 1.2rem;
+        background-image: radial-gradient(circle at top right, rgba(29, 185, 84, 0.05) 0%, transparent 70%);
+    }
+
+    .message {
+        max-width: 70%;
+        padding: 1rem 1.2rem;
+        border-radius: 16px;
+        background: rgba(35, 35, 35, 0.9);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        opacity: 0;
+        transform: translateY(20px);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        position: relative;
+        transition: all 0.3s ease;
+    }
+
+    .message:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+        border-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .message-own {
+        background: rgba(29, 185, 84, 0.15);
+        border-color: rgba(29, 185, 84, 0.25);
+        margin-left: auto;
+        box-shadow: 0 4px 15px rgba(29, 185, 84, 0.1);
+    }
+
+    .message-own:hover {
+        border-color: rgba(29, 185, 84, 0.35);
+        box-shadow: 0 6px 20px rgba(29, 185, 84, 0.15);
+    }
+
+    .animate-in {
+        animation: fadeInUp 0.5s ease forwards;
+    }
+
+    @keyframes fadeInUp {
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .message-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.7rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .message-own .message-header {
+        border-bottom-color: rgba(29, 185, 84, 0.2);
+    }
+
+    .user-name {
+        font-weight: 600;
+        color: #1DB954;
+        letter-spacing: -0.3px;
+    }
+
+    .message-own .user-name {
+        color: rgba(255, 255, 255, 0.9);
+    }
+
+    .timestamp {
+        font-size: 0.8rem;
+        color: rgba(255, 255, 255, 0.5);
+    }
+
+    .message-content {
+        color: rgba(255, 255, 255, 0.9);
+        line-height: 1.6;
+        word-wrap: break-word;
+        font-size: 1.05rem;
+    }
+
+    .message-input {
+        padding: 1.2rem;
+        background: rgba(18, 18, 18, 0.95);
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+        position: relative;
+    }
+
+    .message-input::before {
+        content: '';
+        position: absolute;
+        top: -1px;
+        left: 10%;
+        right: 10%;
+        height: 1px;
+        background: linear-gradient(to right, transparent, rgba(29, 185, 84, 0.3), transparent);
+    }
+
+    #messageInput {
+        flex-grow: 1;
+        background: rgba(40, 40, 40, 0.8);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 12px;
+        padding: 1rem 1.2rem;
+        color: #fff;
+        font-size: 1rem;
+        resize: none;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        min-height: 20px;
+        max-height: 150px;
+    }
+
+    #messageInput:focus {
+        outline: none;
+        border-color: #1DB954;
+        background: rgba(50, 50, 50, 0.8);
+        box-shadow: 0 4px 15px rgba(29, 185, 84, 0.15);
+    }
+
+    #messageInput::placeholder {
+        color: rgba(255, 255, 255, 0.5);
+    }
+
+    .send-button {
+        background: #1DB954;
+        color: white;
+        border: none;
+        padding: 1rem 1.8rem;
+        border-radius: 12px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        box-shadow: 0 4px 10px rgba(29, 185, 84, 0.2);
+        flex-shrink: 0;
+    }
+
+    .send-button:hover {
+        background: #1ED760;
+        transform: translateY(-3px) scale(1.03);
+        box-shadow: 0 6px 15px rgba(29, 185, 84, 0.3);
+    }
+
+    .send-button:active {
+        transform: translateY(0) scale(0.98);
+    }
+
+    .send-button i {
+        font-size: 1.1rem;
+        transition: transform 0.3s ease;
+    }
+
+    .send-button:hover i {
+        transform: translateX(3px);
+    }
+
+    .no-messages {
+        text-align: center;
+        padding: 4rem 2rem;
+        color: rgba(255, 255, 255, 0.6);
+        animation: fadeIn 1s ease;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+
+        to {
+            opacity: 1;
+        }
+    }
+
+    .no-messages i {
+        font-size: 4rem;
+        color: #1DB954;
+        margin-bottom: 1.5rem;
+        animation: float 3s infinite ease-in-out;
+        opacity: 0.9;
+    }
+
+    @keyframes float {
+        0% {
+            transform: translateY(0);
+        }
+
+        50% {
+            transform: translateY(-10px);
+        }
+
+        100% {
+            transform: translateY(0);
+        }
+    }
+
+    .no-messages p {
+        font-size: 1.3rem;
+        color: rgba(255, 255, 255, 0.7);
+    }
+
+    /* Scrollbar styling */
+    .messages::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    .messages::-webkit-scrollbar-track {
+        background: rgba(0, 0, 0, 0.2);
+        border-radius: 4px;
+    }
+
+    .messages::-webkit-scrollbar-thumb {
+        background: #1DB954;
+        border-radius: 4px;
+        transition: all 0.3s ease;
+    }
+
+    .messages::-webkit-scrollbar-thumb:hover {
+        background: #1ED760;
+    }
+
+    /* Mobile responsiveness */
+    @media (max-width: 768px) {
+        .chat-container {
+            padding: 1rem 1.2rem;
+        }
+
+        .chat-header h1 {
+            font-size: 2.2rem;
+        }
+
+        .chat-box {
+            height: calc(100vh - 130px);
+        }
+
+        .messages {
+            padding: 1.2rem;
+        }
+
+        .message {
+            max-width: 85%;
+            padding: 0.8rem 1rem;
+        }
+
+        .message-input {
+            flex-direction: column;
+            padding: 1rem;
+            gap: 0.8rem;
+        }
+
+        .send-button {
+            width: 100%;
+            justify-content: center;
+            padding: 0.8rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Initialize Socket.IO with proper configuration
+        const socket = io({
+            transports: ['websocket'],
+            upgrade: false
+        });
+
+        const messageInput = document.getElementById('messageInput');
+        const sendButton = document.getElementById('sendMessage');
+        const messagesContainer = document.getElementById('messages');
+
+        // Scroll to bottom of messages on page load
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
+        // Function to add a new message to the chat
+        function addMessage(message) {
+            const messageElement = document.createElement('div');
+            const isOwnMessage = message.userId === parseInt("{{ session['id'] }}");
+            messageElement.className = `message animate-in${isOwnMessage ? ' message-own' : ''}`;
+            
+            messageElement.innerHTML = `
+                <div class="message-header">
+                    <span class="user-name">${message.firstName} ${message.lastName}</span>
+                    <span class="timestamp">${message.createdAt}</span>
+                </div>
+                <div class="message-content">
+                    ${escapeHtml(message.message)}
+                </div>
+            `;
+            
+            // Add the new message at the end of the container
+            messagesContainer.appendChild(messageElement);
+            
+            // Scroll to the bottom to show the new message
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        // Send message when button is clicked
+        sendButton.addEventListener('click', sendMessage);
+
+        // Send message when Enter is pressed (Shift+Enter for new line)
+        messageInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+
+        function sendMessage() {
+            const message = messageInput.value.trim();
+            if (!message) return;
+
+            socket.emit('send_message', { message: message });
+            messageInput.value = '';
+            messageInput.style.height = 'auto';
+        }
+
+        // Handle connection status
+        socket.on('connect', function() {
+            console.log('Connected to chat server');
+        });
+
+        socket.on('disconnect', function() {
+            console.log('Disconnected from chat server');
+        });
+
+        // Handle incoming messages
+        socket.on('new_message', function(message) {
+            console.log('Received message:', message);
+            addMessage(message);
+        });
+
+        // Handle errors
+        socket.on('error', function(data) {
+            console.error('Error:', data.error);
+            alert('Error sending message: ' + data.error);
+        });
+
+        // Helper function to escape HTML
+        function escapeHtml(unsafe) {
+            return unsafe
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
+        // Auto-resize textarea
+        messageInput.addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = (this.scrollHeight) + 'px';
+        });
+    });
+</script>
+{% endblock %}

@@ -13,10 +13,62 @@
                 <!-- Glass-morphism card effect -->
                 <div class="card border-0 bg-transparent backdrop-blur main-card">
                     <div class="glass-effect position-relative overflow-hidden rounded-4">
-                        <!-- Animated ambient background -->
-                        <div class="ambient-background"></div>
+                        <!-- Gradient background overlay -->
+                        <div class="gradient-overlay"></div>
 
                         <div class="card-body p-4 position-relative">
+                            <!-- Favorites Section -->
+                            <div class="favorites-section mb-5">
+                                <div class="d-flex justify-content-between align-items-center mb-4">
+                                    <h2 class="display-5 text-white fw-bold mb-0 animate-title">
+                                        <i class="fas fa-heart text-danger me-2"></i> Your <span
+                                            class="highlight-text">Favorites</span>
+                                        <span class="liked-count">({{ liked_count }} songs)</span>
+                                    </h2>
+                                </div>
+
+                                {% if liked_songs %}
+                                <div class="table-responsive favorites-table-container">
+                                    <table class="table table-hover custom-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Title</th>
+                                                <th>Artist</th>
+                                                <th>Album</th>
+                                                <th>Genre</th>
+                                                <th>Duration</th>
+                                                <th>Liked At</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for song in liked_songs %}
+                                            <tr class="favorite-row">
+                                                <td>
+                                                    <div class="d-flex align-items-center">
+                                                        <img src="{{ url_for('static', filename=song.coverArt) }}"
+                                                            alt="Album Cover" class="album-thumbnail me-2">
+                                                        {{ song.title }}
+                                                    </div>
+                                                </td>
+                                                <td>{{ song.artistName }}</td>
+                                                <td>{{ song.albumTitle }}</td>
+                                                <td>{{ song.genreName }}</td>
+                                                <td>{{ song.duration }}</td>
+                                                <td>{{ song.likedAt.strftime('%Y-%m-%d %H:%M') }}</td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                                {% else %}
+                                <div class="no-favorites-message">
+                                    <i class="fas fa-heart-broken text-danger"></i>
+                                    <p>No favorite songs yet. Start liking songs to see them here!</p>
+                                </div>
+                                {% endif %}
+                            </div>
+
+                            <!-- Playlists Section -->
                             <div class="d-flex justify-content-between align-items-center mb-4">
                                 <h2 class="display-5 text-white fw-bold mb-0 animate-title">
                                     <i class="fas fa-music me-2"></i> <span class="highlight-text">My</span> Playlists
@@ -99,7 +151,7 @@
 
     .page-wrapper {
         min-height: 100vh;
-        background: linear-gradient(135deg, #121212 0%, #1e1e1e 100%);
+        background: linear-gradient(135deg, #121212 0%, #191414 100%);
         padding: 0;
         margin: 0;
         width: 100%;
@@ -117,37 +169,23 @@
 
     /* Glass-morphism effect */
     .glass-effect {
-        background: rgba(30, 30, 30, 0.7);
-        backdrop-filter: blur(12px);
+        background: rgba(25, 20, 20, 0.8);
+        backdrop-filter: blur(10px);
         border: 1px solid rgba(255, 255, 255, 0.1);
         box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
         height: 100%;
     }
 
-    /* Animated ambient background */
-    .ambient-background {
+    /* Gradient overlay instead of animated background */
+    .gradient-overlay {
         position: absolute;
-        top: -50%;
-        left: -50%;
-        right: -50%;
-        bottom: -50%;
-        width: 200%;
-        height: 200%;
-        background: transparent url('https://cdnjs.cloudflare.com/ajax/libs/emojione/2.2.7/assets/svg/1f30c.svg') repeat 0 0;
-        background-size: 100px 100px;
-        opacity: 0.03;
-        animation: ambient-shift 90s linear infinite;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: radial-gradient(circle at top left, rgba(29, 185, 84, 0.05) 0%, transparent 60%),
+            radial-gradient(circle at bottom right, rgba(30, 215, 96, 0.05) 0%, transparent 60%);
         z-index: -1;
-    }
-
-    @keyframes ambient-shift {
-        0% {
-            transform: rotate(0deg);
-        }
-
-        100% {
-            transform: rotate(360deg);
-        }
     }
 
     /* Title animation */
@@ -348,22 +386,6 @@
         box-shadow: 0 8px 20px rgba(29, 185, 84, 0.4);
     }
 
-    .btn-glow:before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-        transform: translateX(-100%);
-        transition: all 0.6s ease;
-    }
-
-    .btn-glow:hover:before {
-        transform: translateX(100%);
-    }
-
     .btn-text {
         margin-right: 10px;
     }
@@ -507,6 +529,71 @@
     }
 
     ::-webkit-scrollbar-thumb:hover {
+        background: #1ed760;
+    }
+
+    .favorites-section {
+        background: rgba(25, 20, 20, 0.7);
+        border-radius: 12px;
+        padding: 20px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        margin-bottom: 30px;
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    }
+
+    .liked-count {
+        font-size: 1rem;
+        color: #b3b3b3;
+        margin-left: 10px;
+    }
+
+    .album-thumbnail {
+        width: 40px;
+        height: 40px;
+        border-radius: 4px;
+        object-fit: cover;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    }
+
+    .no-favorites-message {
+        text-align: center;
+        padding: 40px;
+        color: #b3b3b3;
+    }
+
+    .no-favorites-message i {
+        font-size: 3rem;
+        margin-bottom: 15px;
+    }
+
+    .favorite-row {
+        transition: all 0.3s ease;
+    }
+
+    .favorite-row:hover {
+        background: rgba(29, 185, 84, 0.1);
+        transform: translateY(-2px);
+    }
+
+    .favorites-table-container {
+        max-height: 300px;
+        overflow-y: auto;
+    }
+
+    .favorites-table-container::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    .favorites-table-container::-webkit-scrollbar-track {
+        background: rgba(0, 0, 0, 0.2);
+    }
+
+    .favorites-table-container::-webkit-scrollbar-thumb {
+        background: #1DB954;
+        border-radius: 4px;
+    }
+
+    .favorites-table-container::-webkit-scrollbar-thumb:hover {
         background: #1ed760;
     }
 </style>
